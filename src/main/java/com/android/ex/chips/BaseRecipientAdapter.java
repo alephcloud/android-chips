@@ -179,7 +179,14 @@ public class BaseRecipientAdapter extends BaseAdapter implements Filterable, Acc
         }
 
         public TemporaryEntry(Cursor cursor, Long directoryId) {
-            this.displayName = cursor.getString(Queries.Query.NAME);
+            String name = cursor.getString(Queries.Query.NAME);
+            if (name.startsWith("<")) {
+                name = name.substring(1);
+            }
+            if (name.endsWith(">")) {
+                name = name.substring(0, name.length() - 1);
+            }
+            this.displayName = name;
             this.destination = cursor.getString(Queries.Query.DESTINATION);
             this.destinationType = cursor.getInt(Queries.Query.DESTINATION_TYPE);
             this.destinationLabel = cursor.getString(Queries.Query.DESTINATION_LABEL);
