@@ -5,7 +5,6 @@ android {
     buildToolsVersion "21.0.2"
 
     defaultConfig {
-        applicationId "com.android.ex.chips"
         minSdkVersion 14
         targetSdkVersion 21
     }
