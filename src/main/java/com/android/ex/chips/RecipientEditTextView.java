@@ -111,6 +111,13 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
         GestureDetector.OnGestureListener, OnDismissListener, OnClickListener,
         TextView.OnEditorActionListener {
 
+    public interface RecipientEditTextListener {
+        public void onChipAdded();
+        public void onChipRemoved();    // not implemented
+    }
+
+    private RecipientEditTextListener mListener;
+
     private static final char COMMIT_CHAR_COMMA = ',';
 
     private static final char COMMIT_CHAR_SEMICOLON = ';';
@@ -320,6 +327,10 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
         setOnEditorActionListener(this);
 
         setDropdownChipLayouter(new DropdownChipLayouter(LayoutInflater.from(context), context));
+    }
+
+    public void setListener(RecipientEditTextListener listener) {
+        mListener = listener;
     }
 
     protected void setDropdownChipLayouter(DropdownChipLayouter dropdownChipLayouter) {
@@ -1295,6 +1306,9 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
             // choose the first entry.
             submitItemAtPosition(0);
             dismissDropDown();
+            if (mListener != null) {
+                mListener.onChipAdded();
+            }
             return true;
         } else {
             int tokenEnd = mTokenizer.findTokenEnd(editable, start);
@@ -1323,6 +1337,9 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
                     dismissDropDown();
                 }
                 sanitizeBetween();
+                if (mListener != null) {
+                    mListener.onChipAdded();
+                }
                 return true;
             }
         }
@@ -1783,6 +1800,9 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
             editable.replace(start, end, chip);
         }
         sanitizeBetween();
+        if (mListener != null) {
+            mListener.onChipAdded();
+        }
     }
 
     private RecipientEntry createValidatedEntry(RecipientEntry item) {
@@ -1930,7 +1950,7 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
     }
 
     // Visible for testing.
-    /* package */int countTokens(Editable text) {
+    public int countTokens(Editable text) {
         int tokenCount = 0;
         int start = 0;
         while (start < text.length()) {
