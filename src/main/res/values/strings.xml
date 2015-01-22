@@ -17,6 +17,11 @@
     <!-- Text displayed when the recipientedittextview is not focused. Displays the total number of recipients since the field is shrunk to just display a portion -->
     <string name="more_string">\u002B<xliff:g id="count">%1$s</xliff:g></string>
 
+    <plurals name="more_recipients">
+        <item quantity="one">&amp; 1 other</item>
+        <item quantity="other">&amp; %1$d others</item>
+    </plurals>
+
     <!-- Text displayed when the user long presses on a chip to copy the recipients email address.
          [CHAR LIMIT=200] -->
     <string name="copy_email">Copy email address</string>

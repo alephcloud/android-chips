@@ -135,7 +135,7 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
 
     // TODO: get correct number/ algorithm from with UX.
     // Visible for testing.
-    /*package*/ static final int CHIP_LIMIT = 2;
+    /*package*/ static final int CHIP_LIMIT = 1;
 
     private static final int MAX_CHIPS_PARSED = 50;
 
@@ -1908,7 +1908,8 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
     }
 
     private MoreImageSpan createMoreSpan(int count) {
-        String moreText = String.format(mMoreItem.getText().toString(), count);
+        mMoreItem.setText(getContext().getResources().getQuantityString(R.plurals.more_recipients, count, count));
+        String moreText = mMoreItem.getText().toString();
         TextPaint morePaint = new TextPaint(getPaint());
         morePaint.setTextSize(mMoreItem.getTextSize());
         morePaint.setColor(mMoreItem.getCurrentTextColor());
