@@ -19,6 +19,7 @@ package com.android.ex.chips;
 import android.net.Uri;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.DisplayNameSources;
+import android.text.TextUtils;
 import android.text.util.Rfc822Token;
 import android.text.util.Rfc822Tokenizer;
 
@@ -143,6 +144,12 @@ public class RecipientEntry {
      */
     private static String pickDisplayName(int displayNameSource, String displayName,
             String destination) {
+        if (displayName != null && displayName.indexOf("<") >= 0) {
+            String name = displayName.substring(displayName.indexOf("<") + 1, displayName.indexOf(">"));
+            if (TextUtils.isEmpty(name.trim())) {
+                return destination;
+            }
+        }
         return (displayNameSource > DisplayNameSources.PHONE) ? displayName : destination;
     }
 
