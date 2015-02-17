@@ -647,7 +647,7 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
         paint.getTextWidths(" ", widths);
         CharSequence ellipsizedText = ellipsizeText(createChipDisplayText(contact), paint,
                 calculateAvailableWidth() - iconWidth - widths[0] - backgroundPadding.left
-                    - backgroundPadding.right);;
+                    - backgroundPadding.right);
         int textWidth = (int) paint.measureText(ellipsizedText, 0, ellipsizedText.length());
 
         // Make sure there is a minimum chip width so the user can ALWAYS
