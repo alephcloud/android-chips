@@ -86,7 +86,7 @@ public class RecipientEntry {
             String lookupKey) {
         mEntryType = entryType;
         mIsFirstLevel = isFirstLevel;
-        mDisplayName = displayName;
+        mDisplayName = displayName != null ? displayName.replace(",", "") : null;
         mDestination = destination;
         mDestinationType = destinationType;
         mDestinationLabel = destinationLabel;
