@@ -286,6 +286,9 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
 
     private DropdownChipLayouter mDropdownChipLayouter;
 
+    // this is used to highlight recipients that are not whitelisted
+    private final Set<String> mInvalidRecipients = new HashSet<String>();
+
     public RecipientEditTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setChipDimensions(context, attrs);
@@ -331,6 +334,48 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
 
     public void setListener(RecipientEditTextListener listener) {
         mListener = listener;
+    }
+
+    public void setInvalidRecipients(final Set<String> recipients) {
+        mInvalidRecipients.clear();
+        mInvalidRecipients.addAll(recipients);
+        expand();
+        DrawableRecipientChip[] chips =
+                getSpannable().getSpans(0, getText().length(), DrawableRecipientChip.class);
+        for (DrawableRecipientChip chip : chips) {
+            if (mInvalidRecipients.contains(chip.getEntry().getDestination())) {
+                markChipInvalid(chip);
+            }
+        }
+        shrink();
+    }
+
+    private void markChipInvalid(DrawableRecipientChip chip) {
+        int start = getChipStart(chip);
+        int end = getChipEnd(chip);
+        Editable editable = getText();
+        if (start == -1 || end == -1) {
+            Log.w(TAG, "The chip doesn't exist or may be a chip a user was editing");
+            setSelection(editable.length());
+            commitDefault();
+        } else {
+            getSpannable().removeSpan(chip);
+            QwertyKeyListener.markAsReplaced(editable, start, end, "");
+            editable.removeSpan(chip);
+            try {
+                if (!mNoChips) {
+                    editable.setSpan(constructChipSpan(chip.getEntry(), false, false),
+                            start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            } catch (NullPointerException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+        setCursorVisible(true);
+        setSelection(editable.length());
+        if (mAlternatesPopup != null && mAlternatesPopup.isShowing()) {
+            mAlternatesPopup.dismiss();
+        }
     }
 
     protected void setDropdownChipLayouter(DropdownChipLayouter dropdownChipLayouter) {
@@ -735,7 +780,7 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
      */
     // Visible for testing.
     /* package */Drawable getChipBackground(RecipientEntry contact) {
-        return contact.isValid() ? mChipBackground : mInvalidChipBackground;
+        return contact.isValid() && !mInvalidRecipients.contains(contact.getDestination()) ? mChipBackground : mInvalidChipBackground;
     }
 
     /**
