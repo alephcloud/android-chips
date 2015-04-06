@@ -288,6 +288,7 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
 
     // this is used to highlight recipients that are not whitelisted
     private final Set<String> mInvalidRecipients = new HashSet<String>();
+    private boolean mHasInvalidRecipients;
 
     public RecipientEditTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -338,6 +339,7 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
 
     public void setInvalidRecipients(final Set<String> recipients) {
         mInvalidRecipients.clear();
+        mHasInvalidRecipients = false;
         mInvalidRecipients.addAll(recipients);
         expand();
         DrawableRecipientChip[] chips =
@@ -345,9 +347,14 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
         for (DrawableRecipientChip chip : chips) {
             if (mInvalidRecipients.contains(chip.getEntry().getDestination())) {
                 markChipInvalid(chip);
+                mHasInvalidRecipients = true;
             }
         }
         shrink();
+    }
+
+    public boolean hasInvalidRecipients() {
+        return mHasInvalidRecipients;
     }
 
     private void markChipInvalid(DrawableRecipientChip chip) {
