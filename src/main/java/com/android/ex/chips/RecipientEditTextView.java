@@ -345,9 +345,24 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
         DrawableRecipientChip[] chips =
                 getSpannable().getSpans(0, getText().length(), DrawableRecipientChip.class);
         for (DrawableRecipientChip chip : chips) {
-            if (mInvalidRecipients.contains(chip.getEntry().getDestination())) {
-                markChipInvalid(chip);
-                mHasInvalidRecipients = true;
+            String destination = chip.getEntry().getDestination();
+            if (destination != null) {
+                destination = destination.toLowerCase();
+                if (mInvalidRecipients.contains(destination)) {
+                    mHasInvalidRecipients = true;
+                    break;
+                }
+            }
+        }
+
+        if (mHasInvalidRecipients) {
+            setText("");
+            for (DrawableRecipientChip chip : chips) {
+                String destination = chip.getEntry().getDestination();
+                if (destination != null) {
+                    destination = destination.toLowerCase();
+                    append(destination);
+                }
             }
         }
         shrink();
@@ -355,34 +370,6 @@ public class RecipientEditTextView extends MultiAutoCompleteTextView implements
 
     public boolean hasInvalidRecipients() {
         return mHasInvalidRecipients;
-    }
-
-    private void markChipInvalid(DrawableRecipientChip chip) {
-        int start = getChipStart(chip);
-        int end = getChipEnd(chip);
-        Editable editable = getText();
-        if (start == -1 || end == -1) {
-            Log.w(TAG, "The chip doesn't exist or may be a chip a user was editing");
-            setSelection(editable.length());
-            commitDefault();
-        } else {
-            getSpannable().removeSpan(chip);
-            QwertyKeyListener.markAsReplaced(editable, start, end, "");
-            editable.removeSpan(chip);
-            try {
-                if (!mNoChips) {
-                    editable.setSpan(constructChipSpan(chip.getEntry(), false, false),
-                            start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-            } catch (NullPointerException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-        }
-        setCursorVisible(true);
-        setSelection(editable.length());
-        if (mAlternatesPopup != null && mAlternatesPopup.isShowing()) {
-            mAlternatesPopup.dismiss();
-        }
     }
 
     protected void setDropdownChipLayouter(DropdownChipLayouter dropdownChipLayouter) {
